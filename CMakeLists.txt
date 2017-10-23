@@ -91,6 +91,7 @@ target_link_libraries(vn200_node
 
 install(PROGRAMS
   scripts/gpsFix.py
+  scripts/silvere_convert_imu.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -107,6 +108,10 @@ install(TARGETS vn200_node
 #   FILES_MATCHING PATTERN "*.h"
 #   PATTERN ".svn" EXCLUDE
 # )
+
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 # install(FILES
