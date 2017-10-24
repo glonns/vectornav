@@ -92,6 +92,7 @@ target_link_libraries(vn200_node
 install(PROGRAMS
   scripts/gpsFix.py
   scripts/silvere_convert_imu.py
+  scripts/silvere_convert_to_fake_imu.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
