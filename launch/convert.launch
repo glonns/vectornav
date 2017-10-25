@@ -6,7 +6,7 @@ roslaunch vectornav convert.launch bag_filename:=/home/osboxes/Downloads/2017-10
 <launch>
 
 	<!-- play a bag file -->
-	<node pkg="rosbag" type="play" name="player" output="screen" args="$(arg bag_filename)"/>
+	<node pkg="rosbag" type="play" name="player" output="screen" args="$(arg bag_filename) --clock"/>
 	
 	<!-- convert vn200 imu messages to standard ros imu messages -->
 	<node pkg="vectornav" name="convert" type="silvere_convert_imu.py"/>

@@ -25,8 +25,10 @@
 
 from copy             import deepcopy
 
+import sys
 import rospy
 import tf
+import rosbag
 
 from sensor_msgs.msg  import Imu
 from sensor_msgs.msg  import MagneticField
@@ -42,7 +44,9 @@ from vectornav.msg    import sensors
 
 import math
 
-
+#point cloud
+from geometry_msgs.msg import Point
+from sensor_msgs.msg import PointCloud2
 
 def sub_imuCB(msg_in): 
   global pub_imu
@@ -127,30 +131,30 @@ def sub_insCB(msg_in):
 
 
 if __name__ == '__main__':
-  rospy.init_node('vectornav_sensor_msgs')
-  
-  global pub_imu
-  global pub_mag
-  global pub_temp
-  global pub_baro
-  global pub_gps
-  global pub_time
-  
-  global msg_imu
-    
-  msg_imu = Imu()
-  
-  pub_imu  = rospy.Publisher("/imu"          , Imu, queue_size=10)
-  pub_mag  = rospy.Publisher("/MagneticField", MagneticField, queue_size=10)
-  pub_temp = rospy.Publisher("/Temerature"   , Temperature, queue_size=10)
-  pub_baro = rospy.Publisher("/FluidPressure", FluidPressure, queue_size=10)
-  pub_gps  = rospy.Publisher("/NavSatFix"    , NavSatFix, queue_size=10)
-  pub_time = rospy.Publisher("/TimeRef"      , TimeReference, queue_size=10)
-  
-  #TODO: Only subscribe when we have subscribers
-  rospy.Subscriber("/vectornav/imu", sensors,  sub_imuCB)
-  #rospy.Subscriber("/vectornav/ins", ins,      sub_insCB)
-  rospy.spin()
+
+	global msg_imu
+	msg_imu = Imu()
+
+	if len(sys.argv) < 3:
+		print("usage: my_node.py bag_name_in bag_name_out")
+	else:
+		with rosbag.Bag(sys.argv[2], 'w') as outbag:
+			for topic, msg_in, t in rosbag.Bag(sys.argv[1]).read_messages():
+        			if topic == "/vectornav/imu":
+					msg_imu.header.stamp          = msg_in.header.stamp
+					msg_imu.header.frame_id       = "imu_link"
+					msg_imu.angular_velocity.x    = msg_in.Gyro.x
+					msg_imu.angular_velocity.y    = msg_in.Gyro.y
+					msg_imu.angular_velocity.z    = msg_in.Gyro.z
+					msg_imu.linear_acceleration.x = msg_in.Accel.x
+					msg_imu.linear_acceleration.y = msg_in.Accel.y
+					msg_imu.linear_acceleration.z = msg_in.Accel.z
+            				outbag.write("/imu", msg_imu, msg_imu.header.stamp)
+				if topic == "/horizontal_laser_3d":
+					outbag.write(topic, msg_in, msg_in.header.stamp)
+
+				
+
   
   
   

@@ -40,6 +40,10 @@ from sensor_msgs.msg  import TimeReference
 from vectornav.msg    import ins
 from vectornav.msg    import sensors
 
+#point cloud
+from geometry_msgs.msg import Point
+from sensor_msgs.msg import PointCloud2
+
 import math
 
 
@@ -81,6 +85,19 @@ def sub_imuCB(msg_in):
   msg_baro.fluid_pressure   = msg_in.Pressure / 1000.0
   pub_baro.publish(msg_baro)
   
+def sub_laserCB(msg_in): 
+  global pub_imu
+  
+  global msg_imu
+  msg_imu.header.stamp          = msg_in.header.stamp
+  msg_imu.header.frame_id       = "imu_link"#msg_in.header.frame_id
+  msg_imu.angular_velocity.x    = 0#msg_in.Gyro.x
+  msg_imu.angular_velocity.y    = 0#msg_in.Gyro.y
+  msg_imu.angular_velocity.z    = 0#msg_in.Gyro.z
+  msg_imu.linear_acceleration.x = 0#msg_in.Accel.x
+  msg_imu.linear_acceleration.y = 0#msg_in.Accel.y
+  msg_imu.linear_acceleration.z = 9.8#msg_in.Accel.z
+  pub_imu.publish(msg_imu)
 
 
 def sub_insCB(msg_in): 
@@ -148,7 +165,8 @@ if __name__ == '__main__':
   pub_time = rospy.Publisher("/TimeRef"      , TimeReference, queue_size=10)
   
   #TODO: Only subscribe when we have subscribers
-  rospy.Subscriber("/vectornav/imu", sensors,  sub_imuCB)
+  #rospy.Subscriber("/vectornav/imu", sensors,  sub_imuCB)
+  rospy.Subscriber("/horizontal_laser_3d", PointCloud2,  sub_laserCB)
   #rospy.Subscriber("/vectornav/ins", ins,      sub_insCB)
   rospy.spin()
   
