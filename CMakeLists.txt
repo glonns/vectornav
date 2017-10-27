@@ -93,6 +93,7 @@ install(PROGRAMS
   scripts/gpsFix.py
   scripts/silvere_convert_imu.py
   scripts/silvere_convert_to_fake_imu.py
+  scripts/silvere_convert_imu_messages_in_bags.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

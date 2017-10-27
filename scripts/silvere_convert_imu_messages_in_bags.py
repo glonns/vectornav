@@ -136,7 +136,7 @@ if __name__ == '__main__':
 	msg_imu = Imu()
 
 	if len(sys.argv) < 3:
-		print("usage: my_node.py bag_name_in bag_name_out")
+		print("usage: silvere_convert_imu_messages_in_bags.py bag_name_in bag_name_out")
 	else:
 		with rosbag.Bag(sys.argv[2], 'w') as outbag:
 			for topic, msg_in, t in rosbag.Bag(sys.argv[1]).read_messages():
