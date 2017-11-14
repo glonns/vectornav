@@ -150,8 +150,9 @@ if __name__ == '__main__':
 					msg_imu.linear_acceleration.y = msg_in.Accel.y
 					msg_imu.linear_acceleration.z = msg_in.Accel.z
             				outbag.write("/imu", msg_imu, msg_imu.header.stamp)
-				if topic == "/horizontal_laser_3d":
-					outbag.write(topic, msg_in, msg_in.header.stamp)
+				if topic == "/Sensor/points":
+					msg_in.header.frame_id = "horizontal_vlp16_link"
+					outbag.write("horizontal_laser_3d", msg_in, msg_in.header.stamp)
 
 				
 
