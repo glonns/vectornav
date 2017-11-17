@@ -26,6 +26,7 @@ find_package(catkin REQUIRED tf)
    gps.msg
    sensors.msg
    utc_time.msg
+   imu.msg
  )
 
 ## Generate services in the 'srv' folder
