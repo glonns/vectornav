@@ -297,7 +297,7 @@ void binaryMessageReceived(void * user_data, Packet & p, size_t index)
             publish_gps_data();
             if (remainder(gps_msg_count, 16) == 0) {
                 gps_msg_count = 0;
-                ROS_INFO_STREAM("TOW: " << gps_binary_data.tow*1E-9 << " NumSats: " << (int)gps_binary_data.num_sats);
+                //ROS_INFO_STREAM("TOW: " << gps_binary_data.tow*1E-9 << " NumSats: " << (int)gps_binary_data.num_sats);
             }
             break;
         case ins_group_signature:
@@ -326,11 +326,11 @@ void binaryMessageReceived(void * user_data, Packet & p, size_t index)
 
             if (remainder(ins_msg_count, 100) == 0) {
                 ins_msg_count = 0;
-                ROS_INFO_STREAM("INS_Time: " << ins_binary_data.gps_time*1E-9 << " Yaw: " <<
-                        ins_binary_data.ypr[0] << " Pitch: " << ins_binary_data.ypr[1] <<
-                        " Roll: " << ins_binary_data.ypr[2] << " INS_Status: " <<
-                        ins_binary_data.ins_status << " latitude: " << ins_binary_data.lla[0] <<
-                        " longitude: " << ins_binary_data.lla[1] << " altitude: " << ins_binary_data.lla[2]);
+                //ROS_INFO_STREAM("INS_Time: " << ins_binary_data.gps_time*1E-9 << " Yaw: " <<
+//                        ins_binary_data.ypr[0] << " Pitch: " << ins_binary_data.ypr[1] <<
+//                        " Roll: " << ins_binary_data.ypr[2] << " INS_Status: " <<
+//                        ins_binary_data.ins_status << " latitude: " << ins_binary_data.lla[0] <<
+//                        " longitude: " << ins_binary_data.lla[1] << " altitude: " << ins_binary_data.lla[2]);
             }
             break;
         case imu_group_signature:
@@ -342,11 +342,11 @@ void binaryMessageReceived(void * user_data, Packet & p, size_t index)
             publish_imu_data();
             if (remainder(imu_msg_count, 500) == 0) {
                 imu_msg_count = 0;
-                ROS_INFO_STREAM("IMU_Time: " << imu_binary_data.gps_time*1E-9 << " rotr_x: " <<
-                        imu_binary_data.angular_rate[0] << " rotr_y: " << imu_binary_data.angular_rate[1] <<
-                        " rotr_z: " << imu_binary_data.angular_rate[2] << " accel_x: " <<
-                        imu_binary_data.accel[0] << " accel_y: " << imu_binary_data.accel[1] <<
-                        " accel_z: " << imu_binary_data.accel[2]);
+                //ROS_INFO_STREAM("IMU_Time: " << imu_binary_data.gps_time*1E-9 << " rotr_x: " <<
+//                        imu_binary_data.angular_rate[0] << " rotr_y: " << imu_binary_data.angular_rate[1] <<
+//                        " rotr_z: " << imu_binary_data.angular_rate[2] << " accel_x: " <<
+//                        imu_binary_data.accel[0] << " accel_y: " << imu_binary_data.accel[1] <<
+//                        " accel_z: " << imu_binary_data.accel[2]);
             }
             break;
         default:
