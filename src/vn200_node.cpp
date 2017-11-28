@@ -39,7 +39,9 @@
 #include <vectornav/utc_time.h>
 #include <vectornav/gps.h>
 #include <vectornav/ins.h>
-#include <vectornav/sensors.h>
+//#include <vectornav/sensors.h>
+#include <vectornav/imu.h>
+
 
 #include <ros/xmlrpc_manager.h>
 
@@ -58,7 +60,7 @@ std::string imu_frame_id, gps_frame_id;
 // Publishers
 ros::Publisher pub_ins;
 ros::Publisher pub_gps;
-ros::Publisher pub_sensors;
+ros::Publisher pub_imu;
 ros::Publisher pub_sync_in;
 
 // Device
@@ -249,21 +251,21 @@ void publish_imu_data()
     ++imu_seq;
     ros::Time timestamp =  ros::Time::now(); 
     // IMU Data
-    if (pub_sensors.getNumSubscribers() > 0) {
-        vectornav::sensors msg_sensors;
-        msg_sensors.header.seq      = imu_seq;
-        msg_sensors.header.stamp    = timestamp;
-        msg_sensors.header.frame_id = "imu";
-        msg_sensors.gps_time 	    = (double)imu_binary_data.gps_time*1E-9;
-        msg_sensors.Accel.x = imu_binary_data.accel[0];
-        msg_sensors.Accel.y = imu_binary_data.accel[1];
-        msg_sensors.Accel.z = imu_binary_data.accel[2];
+    if (pub_imu.getNumSubscribers() > 0) {
+        vectornav::imu msg_imu;
+        //msg_imu.header.seq      = imu_seq;
+        msg_imu.header.stamp    = ros::Time::fromSec((double)imu_binary_data.gps_time*1E-9+315964800.-18.);
+        msg_imu.header.frame_id = "imu_link";
+        //msg_imu.gps_time 	    = (double)imu_binary_data.gps_time*1E-9;
+        msg_imu.linear_acceleration.x = imu_binary_data.accel[0];
+        msg_imu.linear_acceleration.y = imu_binary_data.accel[1];
+        msg_imu.linear_acceleration.z = imu_binary_data.accel[2];
 
-        msg_sensors.Gyro.x = imu_binary_data.angular_rate[0];
-        msg_sensors.Gyro.y = imu_binary_data.angular_rate[1];
-        msg_sensors.Gyro.z = imu_binary_data.angular_rate[2];
+        msg_imu.angular_velocity.x = imu_binary_data.angular_rate[0];
+        msg_imu.angular_velocity.y = imu_binary_data.angular_rate[1];
+        msg_imu.angular_velocity.z = imu_binary_data.angular_rate[2];
 
-        pub_sensors.publish(msg_sensors);
+        pub_imu.publish(msg_imu);
     }
 }
 
@@ -462,7 +464,7 @@ int main(int argc, char* argv[])
     // Initialize Publishers
     pub_ins     = n_.advertise<vectornav::ins>    ("ins", 1000);
     pub_gps     = n_.advertise<vectornav::gps>    ("gps", 1000);
-    pub_sensors = n_.advertise<vectornav::sensors>("imu", 1000);
+    pub_imu     = n_.advertise<vectornav::imu>    ("imu", 1000);
 
     // Initialize VectorNav
     //VN_ERROR_CODE vn_retval;
@@ -561,3 +563,4 @@ int main(int argc, char* argv[])
     vn200.unregisterAsyncPacketReceivedHandler();
     ros::shutdown();
 }
+
