@@ -254,7 +254,6 @@ void publish_imu_data()
     if (pub_imu.getNumSubscribers() > 0) {
         vectornav::imu msg_imu;
         //msg_imu.header.seq      = imu_seq;
-        msg_imu.header.stamp    = ros::Time::fromSec((double)imu_binary_data.gps_time*1E-9+315964800.-18.);
         msg_imu.header.frame_id = "imu_link";
         //msg_imu.gps_time 	    = (double)imu_binary_data.gps_time*1E-9;
         msg_imu.linear_acceleration.x = imu_binary_data.accel[0];
@@ -264,6 +263,9 @@ void publish_imu_data()
         msg_imu.angular_velocity.x = imu_binary_data.angular_rate[0];
         msg_imu.angular_velocity.y = imu_binary_data.angular_rate[1];
         msg_imu.angular_velocity.z = imu_binary_data.angular_rate[2];
+        ros::Time stamp((double)imu_binary_data.gps_time*1E-9+315964800.-18.);
+        //msg_imu.header.stamp    = ros::Time::fromSec();
+        msg_imu.header.stamp    = stamp;
 
         pub_imu.publish(msg_imu);
     }
