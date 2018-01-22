@@ -194,7 +194,9 @@ void publish_gps_data()
         msg_gps_status_ros.service = 1;
 
         msg_gps_ros.header.seq      = gps_ros_seq;
-        msg_gps_ros.header.stamp    = timestamp;
+        // use real GPS time as timestamp for the packet
+        ros::Time stamp((double)msg_gps.Week*604800. + msg_gps.Time+315964800.-18.);
+        msg_gps_ros.header.stamp    = stamp;
         msg_gps_ros.header.frame_id = "gps";
         msg_gps_ros.status          = msg_gps_status_ros;
 
