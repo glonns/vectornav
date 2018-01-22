@@ -41,6 +41,8 @@
 #include <vectornav/ins.h>
 //#include <vectornav/sensors.h>
 #include <vectornav/imu.h>
+#include <sensor_msgs/NavSatFix.h>
+#include <sensor_msgs/NavSatStatus.h>
 
 
 #include <ros/xmlrpc_manager.h>
@@ -61,6 +63,7 @@ std::string imu_frame_id, gps_frame_id;
 ros::Publisher pub_ins;
 ros::Publisher pub_gps;
 ros::Publisher pub_imu;
+ros::Publisher pub_gps_ros;
 ros::Publisher pub_sync_in;
 
 // Device
@@ -69,6 +72,7 @@ vn::sensors::VnSensor vn200;
 int ins_seq           = 0;
 int imu_seq           = 0;
 int gps_seq           = 0;
+int gps_ros_seq       = 0;
 int msg_cnt           = 0;
 int last_group_number = 0;
 
@@ -145,7 +149,7 @@ void publish_gps_data()
     gps_seq++;
     ros::Time timestamp =  ros::Time::now(); 
 
-    if (pub_gps.getNumSubscribers() > 0)
+    if (pub_gps.getNumSubscribers() > 0 || pub_gps_ros.getNumSubscribers() > 0)
     {
         vectornav::gps msg_gps;
         msg_gps.header.seq      = gps_seq;
@@ -181,6 +185,30 @@ void publish_gps_data()
         msg_gps.TimeAcc  = gps_binary_data.time_sigma;
 
         pub_gps.publish(msg_gps);
+
+        // also publish data in ROS standard format
+        sensor_msgs::NavSatFix msg_gps_ros;
+        sensor_msgs::NavSatStatus msg_gps_status_ros;
+
+        msg_gps_status_ros.status = (gps_binary_data.fix > 0) ? 0 : -1;
+        msg_gps_status_ros.service = 1;
+
+        msg_gps_ros.header.seq      = gps_ros_seq;
+        msg_gps_ros.header.stamp    = timestamp;
+        msg_gps_ros.header.frame_id = "gps";
+        msg_gps_ros.status          = msg_gps_status_ros;
+
+        msg_gps_ros.latitude        = gps_binary_data.lla[0];
+        msg_gps_ros.longitude       = gps_binary_data.lla[1];
+        msg_gps_ros.altitude        = gps_binary_data.lla[2];
+        
+        float accuracy = std::pow(ins_binary_data.pos_sigma, 2.0);
+        msg_gps_ros.position_covariance[0] = accuracy;
+        msg_gps_ros.position_covariance[4] = accuracy;
+        msg_gps_ros.position_covariance[8] = accuracy;
+        msg_gps_ros.position_covariance_type = 1;
+
+        pub_gps_ros.publish(msg_gps_ros);
     }
 }
 
@@ -467,6 +495,7 @@ int main(int argc, char* argv[])
     pub_ins     = n_.advertise<vectornav::ins>    ("ins", 1000);
     pub_gps     = n_.advertise<vectornav::gps>    ("gps", 1000);
     pub_imu     = n_.advertise<vectornav::imu>    ("imu", 1000);
+    pub_gps_ros = n_.advertise<sensor_msgs::NavSatFix>    ("/gps", 1000);
 
     // Initialize VectorNav
     //VN_ERROR_CODE vn_retval;
