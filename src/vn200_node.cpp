@@ -504,8 +504,8 @@ int main(int argc, char* argv[])
     ROS_INFO("Initializing vn200. Port:%s Baud:%d\n", port.c_str(), baud);
 
     try {
-	vn200.connect(port, 115200);
-	vn200.changeBaudRate(baud);
+	vn200.connect(port, baud);
+//	vn200.changeBaudRate(baud);
     } catch (...) {
         ROS_FATAL("Could not conenct to vn200 on port:%s @ Baud:%d;"
                 "Did you add your user to the 'dialout' group in /etc/group?", 
