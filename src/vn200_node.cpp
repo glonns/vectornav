@@ -304,6 +304,7 @@ void publish_imu_data()
         msg_imu.orientation_covariance[1]   = imu_binary_data.magpres0;
         msg_imu.orientation_covariance[2]   = imu_binary_data.magpres1;
         msg_imu.orientation_covariance[3]   = imu_binary_data.magpres2;
+        msg_imu.orientation_covariance[4]   = imu_binary_data.magpres3;
         msg_imu.orientation_covariance[5]   = imu_binary_data.magpres4;
         msg_imu.orientation_covariance[6]   = (int)(imu_binary_data.time_startup*1E-9);
         msg_imu.orientation_covariance[7]   = imu_binary_data.time_startup%1000000000;
