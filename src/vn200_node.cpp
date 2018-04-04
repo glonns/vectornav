@@ -130,6 +130,11 @@ struct imu_binary_data_struct
     uint64_t gps_time;
     vn::math::vec3f accel;
     vn::math::vec3f angular_rate;
+    float magpres0;
+    float magpres1;
+    float magpres2;
+    float magpres3;
+    float magpres4;
 };
 
 struct imu_binary_data_struct imu_binary_data;
@@ -296,6 +301,10 @@ void publish_imu_data()
         ros::Time stamp(imu_binary_data.gps_time*1E-9+315964800-18,imu_binary_data.gps_time%1000000000);
         //msg_imu.header.stamp    = ros::Time::fromSec();
         msg_imu.header.stamp    = stamp;
+        msg_imu.orientation_covariance[1]   = imu_binary_data.magpres0;
+        msg_imu.orientation_covariance[2]   = imu_binary_data.magpres1;
+        msg_imu.orientation_covariance[3]   = imu_binary_data.magpres2;
+        msg_imu.orientation_covariance[5]   = imu_binary_data.magpres4;
         msg_imu.orientation_covariance[6]   = (int)(imu_binary_data.time_startup*1E-9);
         msg_imu.orientation_covariance[7]   = imu_binary_data.time_startup%1000000000;
 
@@ -373,6 +382,11 @@ void binaryMessageReceived(void * user_data, Packet & p, size_t index)
             imu_binary_data.gps_time =     p.extractUint64();
             imu_binary_data.angular_rate = p.extractVec3f();
             imu_binary_data.accel =        p.extractVec3f();
+            imu_binary_data.magpres0 =     p.extractFloat();
+            imu_binary_data.magpres1 =     p.extractFloat();
+            imu_binary_data.magpres2 =     p.extractFloat();
+            imu_binary_data.magpres3 =     p.extractFloat();
+            imu_binary_data.magpres4 =     p.extractFloat();
 
             publish_imu_data();
             if (remainder(imu_msg_count, 500) == 0) {
@@ -554,7 +568,7 @@ int main(int argc, char* argv[])
 
 
     CommonGroup imu_common_group = COMMONGROUP_TIMESTARTUP | COMMONGROUP_TIMEGPS
-        | COMMONGROUP_ACCEL | COMMONGROUP_ANGULARRATE;
+        | COMMONGROUP_ACCEL | COMMONGROUP_ANGULARRATE | COMMONGROUP_MAGPRES;
 
     BinaryOutputRegister imu_log_reg(
         binary_data_output_mode,
